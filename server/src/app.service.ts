@@ -41,4 +41,34 @@ export class AppService {
 
     return url;
   }
+
+  async getUrlInfo(shortUrl: string): Promise<Partial<UrlModel>> {
+    const url = await this.prisma.url.findUnique({
+      where: { shortUrl },
+    });
+
+    if (!url) {
+      throw new NotFoundException('URL not found');
+    }
+
+    return {
+      originalUrl: url.originalUrl,
+      createdAt: url.createdAt,
+      clickCount: url.clickCount,
+    };
+  }
+
+  async deleteUrl(shortUrl: string): Promise<void> {
+    const url = await this.prisma.url.findUnique({
+      where: {shortUrl}
+    })
+
+    if(!url) {
+      throw new NotFoundException('URL not found')
+    }
+
+    await this.prisma.url.delete({
+      where: { shortUrl },
+    });
+  }
 }

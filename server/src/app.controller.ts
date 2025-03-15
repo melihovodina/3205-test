@@ -1,4 +1,4 @@
-import { Body, Controller, Get, NotFoundException, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UrlModel } from './models/url.model';
@@ -27,6 +27,28 @@ export class AppController {
     try {
       const url = await this.appService.findUrlByShortUrl(shortUrl);
       res.redirect(url.originalUrl)
+    } catch (error) {
+      throw error
+    }
+  }
+
+  @ApiOperation({ summary: "Returns information about the shortened URL" })
+  @ApiResponse({ status: 200, type: UrlModel, description: 'Returns URL information' })
+  @Get('/info/:shortUrl')
+  async getUrlInfo(@Param('shortUrl') shortUrl: string): Promise<Partial<UrlModel>> {
+    try {
+      return await this.appService.getUrlInfo(shortUrl);
+    } catch (error) {
+      throw error
+    }
+  }
+
+  @ApiOperation({ summary: "Deletes the shortened URL" })
+  @ApiResponse({ status: 200, description: 'URL deleted successfully' })
+  @Delete('/delete/:shortUrl')
+  async deleteUrl(@Param('shortUrl') shortUrl: string): Promise<void>  {
+    try {
+      await this.appService.deleteUrl(shortUrl)
     } catch (error) {
       throw error
     }

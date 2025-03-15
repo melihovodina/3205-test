@@ -11,20 +11,20 @@ export class UrlModel implements Url {
   @IsUrl()
   originalUrl: string;
 
-  @ApiProperty({example: '', description: 'shortened url'})
+  @ApiProperty({example: 'cm8a1u1hn00002sujfkqk5env', description: 'shortened url'})
   @IsString()
   shortUrl: string;
 
-  @ApiProperty({example: '', description: 'url expiration date'})
+  @ApiProperty({example: '2023-12-31T23:59:59Z', description: 'url expiration date'})
   @IsOptional()
   expiresAt: Date | null;
 
-  @ApiProperty({example: '', description: 'url alias'})
+  @ApiProperty({example: 'myalias', description: 'url alias'})
   @IsOptional()
   @IsString()
   alias: string | null;
 
-  @ApiProperty({example: '', description: 'url creation date'})
+  @ApiProperty({example: '2023-12-31T23:59:59Z', description: 'url creation date'})
   createdAt: Date;
 
   @ApiProperty({example: '123', description: 'number of clicks on url'})

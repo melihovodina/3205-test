@@ -12,7 +12,11 @@ export class AppController {
   @ApiResponse({ status: 201, type: UrlModel})
   @Post('/shorten')
   async shortUrl(@Body() createUrlDto: CreateUrlDto): Promise<UrlModel> {
-    return this.appService.shortUrl(createUrlDto);
+    try {
+      return this.appService.shortUrl(createUrlDto);
+    } catch (error) {
+      throw error
+    }
   }
 
   @Get()

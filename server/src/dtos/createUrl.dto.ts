@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Prisma } from '@prisma/client';
 import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
 
 export class CreateUrlDto {
@@ -7,7 +6,7 @@ export class CreateUrlDto {
   @IsUrl()
   originalUrl: string;
 
-  @ApiProperty({ example: '', description: 'url expiration date', required: false })
+  @ApiProperty({ example: '2023-12-31T23:59:59Z', description: 'url expiration date', required: false })
   @IsOptional()
   expiresAt?: Date | null;
 

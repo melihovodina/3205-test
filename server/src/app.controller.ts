@@ -28,7 +28,7 @@ export class AppController {
       const url = await this.appService.findUrlByShortUrl(shortUrl);
       res.redirect(url.originalUrl)
     } catch (error) {
-      res.status(500).send('Internal server error');
+      throw error
     }
   }
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUrl, MaxLength } from 'class-validator';
+import { IsOptional, IsString, IsUrl, MaxLength, MinDate } from 'class-validator';
 
 export class CreateUrlDto {
   @ApiProperty({ example: 'https://youtube.com', description: 'original url' })
@@ -8,6 +8,7 @@ export class CreateUrlDto {
 
   @ApiProperty({ example: '2023-12-31T23:59:59Z', description: 'url expiration date', required: false })
   @IsOptional()
+  @MinDate(new Date())
   expiresAt?: Date | null;
 
   @ApiProperty({ example: 'myalias', description: 'url alias', required: false })

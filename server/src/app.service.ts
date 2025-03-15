@@ -32,6 +32,13 @@ export class AppService {
       throw new NotFoundException('URL not found');
     }
 
+    if (url.expiresAt && new Date() > url.expiresAt) {
+      await this.prisma.url.delete({
+        where: { shortUrl },
+      });
+      throw new NotFoundException('URL has expired');
+    }
+
     return url;
   }
 }

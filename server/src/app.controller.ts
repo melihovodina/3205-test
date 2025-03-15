@@ -1,9 +1,9 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Req, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UrlModel } from './models/url.model';
 import { CreateUrlDto } from './dtos/createUrl.dto';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 
 @Controller()
 export class AppController {
@@ -23,10 +23,10 @@ export class AppController {
   @ApiOperation({ summary: "Redirects to the original URL" })
   @ApiResponse({ status: 302, description: 'Redirects to the original URL' })
   @Get('/:shortUrl')
-  async redirectUrl(@Param('shortUrl') shortUrl: string, @Res() res: Response): Promise<void> {
+  async redirectUrl(@Param('shortUrl') shortUrl: string, @Res() res: Response, @Req() req: Request): Promise<void> {
     try {
-      const url = await this.appService.findUrlByShortUrl(shortUrl);
-      res.redirect(url.originalUrl)
+      const originalUrl = await this.appService.redirectAndSaveClick(shortUrl, req.ip || 'unknown');
+      res.redirect(originalUrl);
     } catch (error) {
       throw error
     }
@@ -51,6 +51,21 @@ export class AppController {
       await this.appService.deleteUrl(shortUrl)
     } catch (error) {
       throw error
+    }
+  }
+
+  @ApiOperation({ summary: "Returns analytics for the shortened URL" })
+  @ApiResponse({ status: 200, description: 'Returns URL analytics' })
+  @Get('/analytics/:shortUrl')
+  async getAnalytics(@Param('shortUrl') shortUrl: string): Promise<{ clickCount: number; recentIps: string[] }> {
+    try {
+      return await this.appService.getAnalytics(shortUrl);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException('URL not found');
+      } else {
+        throw new Error('Internal server error');
+      }
     }
   }
 }

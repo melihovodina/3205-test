@@ -9,7 +9,7 @@ export class AppService {
   constructor(private readonly prisma: PrismaService) {}
 
   async shortUrl(createUrlDto: CreateUrlDto): Promise<UrlModel> {
-    const shortUrl = createUrlDto.alias || cuid()
+    const shortUrl = createUrlDto.alias || cuid();
 
     const newUrl = await this.prisma.url.create({
       data: {
@@ -20,7 +20,7 @@ export class AppService {
       },
     });
 
-    return newUrl
+    return newUrl;
   }
 
   async findUrlByShortUrl(shortUrl: string): Promise<UrlModel> {
@@ -52,6 +52,7 @@ export class AppService {
     }
 
     return {
+      id: url.id,
       originalUrl: url.originalUrl,
       createdAt: url.createdAt,
       clickCount: url.clickCount,
@@ -60,15 +61,49 @@ export class AppService {
 
   async deleteUrl(shortUrl: string): Promise<void> {
     const url = await this.prisma.url.findUnique({
-      where: {shortUrl}
-    })
+      where: { shortUrl },
+    });
 
-    if(!url) {
-      throw new NotFoundException('URL not found')
+    if (!url) {
+      throw new NotFoundException('URL not found');
     }
 
     await this.prisma.url.delete({
       where: { shortUrl },
     });
+  }
+
+  async redirectAndSaveClick(shortUrl: string, ipAddress: string): Promise<string> {
+    const url = await this.findUrlByShortUrl(shortUrl);
+
+    await this.prisma.click.create({
+      data: {
+        urlId: url.id,
+        ipAddress,
+      },
+    });
+
+    await this.prisma.url.update({
+      where: { id: url.id },
+      data: { clickCount: { increment: 1 } },
+    });
+
+    return url.originalUrl;
+  }
+
+  async getAnalytics(shortUrl: string): Promise<{ clickCount: number; recentIps: string[] }> {
+    const url = await this.findUrlByShortUrl(shortUrl);
+
+    const clicks = await this.prisma.click.findMany({
+      where: { urlId: url.id },
+      take: 5,
+    });
+
+    const recentIps = clicks.map(click => click.ipAddress);
+
+    return {
+      clickCount: url.clickCount,
+      recentIps,
+    };
   }
 }

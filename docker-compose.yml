@@ -1,0 +1,18 @@
+version: '3.8'  # Убедитесь, что указана версия
+
+services:
+  database:
+    image: postgres:latest
+    container_name: database
+    environment:
+      POSTGRES_USER: serv
+      POSTGRES_PASSWORD: database_pass
+      POSTGRES_DB: url_short
+    volumes:
+      - database_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+
+volumes:
+  database_data:

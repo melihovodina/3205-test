@@ -1,0 +1,28 @@
+datasource db {
+  provider = "postgres"
+  url      = "postgresql://serv:database_pass@localhost:5432/url_short?schema=public"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model UrlModel {
+  id          Int      @id @default(autoincrement())
+  originalUrl String   @db.VarChar(2083)
+  shortUrl    String   @unique @db.VarChar(20)
+  expiresAt   DateTime? 
+  alias       String?  @db.VarChar(20)
+  createdAt   DateTime @default(now())
+  clickCount  Int      @default(0)
+  clicks      Click[]
+}
+
+model Click {
+  id        Int      @id @default(autoincrement())
+  urlId     Int
+  clickedAt DateTime @default(now())
+  ipAddress String   @db.VarChar(45)
+
+  url       UrlModel    @relation(fields: [urlId], references: [id])
+}

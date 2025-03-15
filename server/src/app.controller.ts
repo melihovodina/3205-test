@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Post, Res } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UrlModel } from './models/url.model';
 import { CreateUrlDto } from './dtos/createUrl.dto';
+import { Response } from 'express';
 
 @Controller()
 export class AppController {
@@ -19,8 +20,15 @@ export class AppController {
     }
   }
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @ApiOperation({ summary: "Redirects to the original URL" })
+  @ApiResponse({ status: 302, description: 'Redirects to the original URL' })
+  @Get('/:shortUrl')
+  async redirectUrl(@Param('shortUrl') shortUrl: string, @Res() res: Response): Promise<void> {
+    try {
+      const url = await this.appService.findUrlByShortUrl(shortUrl);
+      res.redirect(url.originalUrl)
+    } catch (error) {
+      res.status(500).send('Internal server error');
+    }
   }
 }

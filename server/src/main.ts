@@ -13,6 +13,8 @@ async function bootstrap() {
       forbidNonWhitelisted: true
     })
   )
+
+  app.enableCors()
   
   const config = new DocumentBuilder()
     .setTitle('3025 team test task')

@@ -59,6 +59,17 @@ export class AppService {
     };
   }
 
+  async getAllUrls(): Promise<{id: number, originalUrl: string, shortUrl: string, createdAt: Date}[]> {
+    return this.prisma.url.findMany({
+      select: {
+        id: true,
+        originalUrl: true,
+        shortUrl: true,
+        createdAt: true,
+      },
+    });
+  }
+
   async deleteUrl(shortUrl: string): Promise<void> {
     const url = await this.prisma.url.findUnique({
       where: { shortUrl },

@@ -17,9 +17,9 @@ export interface UrlInfo {
   clickCount?: number;
 }
 
-export const shortUrl = async (url: string): Promise<UrlModel> => {
+export const shortUrl = async (data: { originalUrl: string; expiresAt: string; alias: string }): Promise<UrlModel> => {
   try {
-    const response = await axios.post<UrlModel>(`${API_BASE_URL}/shorten`, { url });
+    const response = await axios.post<UrlModel>(`${API_BASE_URL}/shorten`, data);
     return response.data;
   } catch (error) {
     throw error;

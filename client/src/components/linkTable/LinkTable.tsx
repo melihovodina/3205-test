@@ -70,8 +70,8 @@ function LinkTable() {
                   <td><a onClick={() => handleRedirect(url.shortUrl)}>{url.shortUrl}</a></td>
                   <td>{url.createdAt}</td>
                   <td className="action-buttons">
-                    <Button variant="danger" onClick={() => handleDelete(url.shortUrl)}>Delete</Button>
                     <Button onClick={() => handleInfo(url.shortUrl)}>Info</Button>
+                    <Button variant="danger" onClick={() => handleDelete(url.shortUrl)}>Delete</Button>
                   </td>
                 </tr>
               ))}

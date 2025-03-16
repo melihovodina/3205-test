@@ -79,6 +79,10 @@ export class AppService {
       throw new NotFoundException('URL not found');
     }
 
+    await this.prisma.click.deleteMany({
+      where: { urlId: url.id },
+    });
+
     await this.prisma.url.delete({
       where: { shortUrl },
     });

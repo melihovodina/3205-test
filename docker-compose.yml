@@ -1,4 +1,4 @@
-version: '3.8'  # Убедитесь, что указана версия
+version: '3.8'
 
 services:
   database:
@@ -12,7 +12,29 @@ services:
       - database_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     ports:
-      - "5432:5432"
+      - 5432:5432
+
+  client:
+    container_name: client
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - server
+
+  server:
+    container_name: server
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      DATABASE_URL: "postgresql://serv:database_pass@database:5432/url_short?schema=public"
+    depends_on:
+      - database
 
 volumes:
   database_data:
